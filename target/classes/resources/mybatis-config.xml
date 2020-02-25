@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+	PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+			"http://mybatis.org/dtd/mybatis-3-config.dtd">
+			
+<configuration>
+
+	<settings> 
+		<setting name="cacheEnabled" value="false"/>
+		<setting name="useGeneratedKeys" value="true"/>
+		<setting name="defaultExecutorType" value="REUSE"/>
+	</settings>
+	
+	<typeAliases>
+	
+		<typeAlias alias="mVO" type="com.ineat.oxo.vo.MemberVO" /> 
+		<typeAlias alias="sbVO" type="com.ineat.oxo.vo.StoryBoardVO" /> 
+		<typeAlias alias="rbVO" type="com.ineat.oxo.vo.ReBoardVO" /> 
+		<typeAlias alias="rvVO" type="com.ineat.oxo.vo.ReviewVO" /> 
+		<typeAlias alias="fVO" type="com.ineat.oxo.vo.FileVO" /> 
+		<typeAlias alias="tVO" type="com.ineat.oxo.vo.TasteInfoVO" /> 
+		<typeAlias alias="mdVO" type="com.ineat.oxo.vo.MatdcupVO" /> 
+		<typeAlias alias="pUtil" type="com.ineat.oxo.util.PageUtil" /> 
+		<typeAlias alias="schVO" type="com.ineat.oxo.vo.SearchVO" />
+
+	</typeAliases>
+
+	<mappers>
+
+		<mapper resource="com/ineat/oxo/sql/MemberSQL.xml" />   
+		<mapper resource="com/ineat/oxo/sql/StoryBoardSQL.xml" />   
+		<mapper resource="com/ineat/oxo/sql/ReBoardSQL.xml" />   
+		<mapper resource="com/ineat/oxo/sql/ReviewSQL.xml" />   
+		<mapper resource="com/ineat/oxo/sql/FileSQL.xml" />   
+		<mapper resource="com/ineat/oxo/sql/TasteInfoSQL.xml" />   
+		<mapper resource="com/ineat/oxo/sql/MatdcupSQL.xml" />   
+		<mapper resource="com/ineat/oxo/sql/SearchSQL.xml"/> 
+		<mapper resource="com/ineat/oxo/sql/RecommendSQL.xml" />
+	</mappers>
+</configuration>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="schSQL">
+<select id="tSearch" resultType="tVO" parameterType="schVO">
+SELECT b.rnum rno, b.ml_no ml_no, b.ml_time ml_time, b.ml_title ml_title, b.ml_tel ml_tel, b.ml_price ml_price,
+ b.ml_newaddr ml_newaddr, b.ml_oldaddr ml_oldaddr, b.ml_menu ml_menu, b.ml_tag ml_tag, b.ml_count ml_count, sprice, eprice, b.favorite favorite
+FROM
+(SELECT ROWNUM rnum,  a.ml_no, a.ml_time, a.ml_title, a.ml_tel, a.ml_price, a.ml_newaddr, a.ml_oldaddr,
+    a.ml_menu, a.ml_tag, a.ml_count, a.favorite, 
+    <![CDATA[
+    case
+    when a.s >5 then 5
+    when a.s =0 then 1
+    when a.s = a.s then a.s
+    end as sprice,
+    
+    case
+    when a.e > 5 then 5
+    when a.e = 0 then 1
+    when a.e = a.e then a.e
+    end as eprice
+   ]]> 
+FROM
+(SELECT 
+      ml_no, ml_time, ml_title, ml_tel, ml_price, ml_newaddr, ml_oldaddr,
+    ml_menu, ml_tag, ml_count, NVL(TRUNC((TO_NUMBER(SUBSTR(ml_price,1,INSTR(ml_price,'~',1)-1)))/10000),0)s,  NVL(TRUNC((TO_NUMBER(SUBSTR(ml_price,INSTR(ml_price,'~',1)+1)))/10000),0)e,
+    (SELECT count(*) FROM ie_ml_favorites WHERE mlf_mlno = ml_no ) favorite, (SELECT count(*) FROM ie_review WHERE rv_mlno = ml_no) rv_cnt
+FROM
+    ie_mainlist
+ORDER BY 
+${order}
+ desc ) a
+ WHERE
+ 
+ (ml_title like '%'||#{contents}||'%' or ml_tag like '%'||#{contents}||'%' or '%'|| ml_newaddr like '%'||#{contents}||'%' or ml_oldaddr like '%'||#{contents}||'%' or ml_menu like '%'||#{contents}||'%') 
+  
+ <if test="price != null">
+ AND (a.s IN 
+ <foreach collection="price" item="type" open="(" close=")" separator=",">
+ 	#{type}
+ </foreach>
+ or a.e IN
+  <foreach collection="price" item="type" open="(" close=")" separator=",">
+ 	#{type}
+ </foreach>
+ )
+  </if>
+ <if test="tag != null">
+  AND ml_tag like '%'|| #{tag}||'%'
+  </if>
+  <![CDATA[
+ AND rownum < 5) b
+ WHERE b.rnum >= 1
+  ]]> 
+</select> 
+
+
+<select id="moreResult" resultType="tVO" parameterType="schVO">
+SELECT b.rnum rno, b.ml_no ml_no, b.ml_time ml_time, b.ml_title ml_title, b.ml_tel ml_tel, b.ml_price ml_price,
+ b.ml_newaddr ml_newaddr, b.ml_oldaddr ml_oldaddr, b.ml_menu ml_menu, b.ml_tag ml_tag, b.ml_count ml_count, sprice, eprice, b.favorite
+FROM
+(SELECT ROWNUM rnum,  a.ml_no, a.ml_time, a.ml_title, a.ml_tel, a.ml_price, a.ml_newaddr, a.ml_oldaddr,
+    a.ml_menu, a.ml_tag, a.ml_count,  a.favorite, 
+    <![CDATA[
+    case
+    when a.s >5 then 5
+    when a.s =0 then 1
+    when a.s = a.s then a.s
+    end as sprice,
+    
+    case
+    when a.e > 5 then 5
+    when a.e = 0 then 1
+    when a.e = a.e then a.e
+    end as eprice
+   ]]> 
+FROM
+(SELECT 
+      ml_no, ml_time, ml_title, ml_tel, ml_price, ml_newaddr, ml_oldaddr,
+    ml_menu, ml_tag, ml_count, NVL(TRUNC((TO_NUMBER(SUBSTR(ml_price,1,INSTR(ml_price,'~',1)-1)))/10000),0)s,  NVL(TRUNC((TO_NUMBER(SUBSTR(ml_price,INSTR(ml_price,'~',1)+1)))/10000),0)e
+	, (SELECT count(*) FROM ie_ml_favorites WHERE mlf_mlno = ml_no ) favorite, (SELECT count(*) FROM ie_review WHERE rv_mlno = ml_no) rv_cnt
+FROM
+    ie_mainlist
+ 
+ORDER BY 
+${order}
+ desc ) a
+ WHERE
+ 
+ (ml_title like '%'||#{contents}||'%' or ml_tag like '%'||#{contents}||'%' or '%'|| ml_newaddr like '%'||#{contents}||'%' or ml_oldaddr like '%'||#{contents}||'%') 
+  
+ <if test="price != null">
+ AND (a.s IN 
+ <foreach collection="price" item="type" open="(" close=")" separator=",">
+ 	#{type}
+ </foreach>
+ or a.e IN
+  <foreach collection="price" item="type" open="(" close=")" separator=",">
+ 	#{type}
+ </foreach>
+ )
+  </if>
+   <if test="tag != null">
+  AND ml_tag like '%'|| #{tag}||'%'
+  </if>
+  <![CDATA[
+ AND rownum <= #{num}+5) b
+ WHERE b.rnum >= #{num}
+  ]]> 
+</select> 
+
+
+<select id="sSearch" resultType="sbVO" parameterType="schVO">
+<![CDATA[
+SELECT b.rnum, b.sb_no bno, b.sb_mno mno, b.sb_title title, b.sb_content content, b.sb_date sbDate, b.sb_views views
+ 
+FROM
+(SELECT a.rnum, a.sb_no bno, a.sb_mno mno, a.sb_title title, a.sb_content content, a.sb_date sbDate, a.sb_views views
+FROM
+(SELECT 
+    sb_no bno, (SELECT m_id FROM ie_member WHERE m_no = sb_mno) mid, sb_title title, sb_content content, sb_date sbDate, sb_views views
+FROM
+    ie_mainlist
+ORDER BY ml_no desc ) a
+ WHERE
+ (ml_title like '%'||#{contents}||'%' or ml_tag like '%'||#{contents}||'%') AND rownum <=5) b
+ WHERE b.rnum >=1
+ ]]>
+</select>
+ 
+</mapper>

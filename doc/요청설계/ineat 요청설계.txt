@@ -1,0 +1,348 @@
+#회원관련 요청처리
+1.메인화면 페이지 보기
+	요청내용 : /oxo/main.eat
+	파라미터 : 
+	컨트롤러 : com.ineat.oxo.controller.MainController
+	처리함수 : Main()
+	응답문서 :	/WEB-INF/views/main/main.jsp
+	
+2. 로그인 처리요청
+	요청내용 : /oxo/member/loginProc.eat
+	파라미터 : id, pw
+	컨트롤러 : con.ineat.oxo.controller.Member
+	처리함수 : loginProc()
+	응답문서 :	/WEB-INF/views/main/main.jsp
+	
+3. 로그아웃 처리요청
+	요청내용 : /oxo/member/logout.eat
+	파라미터 : 
+	컨트롤러 : com.ineat.oxo.controller.Member
+	처리함수 : logoutForm()
+	응답문서 :	/WEB-INF/views/main/main.jsp
+	
+4. 회원가입 폼 보기
+	요청내용 : /oxo/member/join.eat
+	파라미터 :
+	컨트롤러 : com.ineat.oxo.controller.Member
+	처리함수 : join()
+	응답문서 :	/WEB-INF/views/member/join.jsp
+	
+5. 회원가입 처리요청
+	요청내용 : /oxo/member/joinProc.eat
+	파라미터 : id, pw, name, nickname, tel, email, birthday
+	컨트롤러 : com.ineat.oxo.controller.Member
+	처리함수 : joinProc()
+	응답문서 :	성공 - /WEB-INF/views/main/main.jsp
+			실패 - /WEB-INF/views/member/join.jsp
+			
+6. 회원아이디 체크요청
+	요청내용 : /oxo/member/idCheck.eat
+	파라미터 : id
+	전송방식 : json
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : idCheck()
+	
+7. 회원 닉네임 체크요청
+	요청내용 : /oxo/member/nnCheck.eat
+	파라미터 : nname
+	전송방식 : json
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : nnCheck()
+	
+8. 회원 전화번호 체크요청
+	요청내용 : /oxo/member/telCheck.eat
+	파라미터 : tel
+	전송방식 : json
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : telCheck()
+	
+9. 회원 이메일  체크요청
+	요청내용 : /oxo/member/eCheck.eat
+	파라미터 : email
+	전송방식 : json
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : eCheck()
+	
+10. 회원 정보보기 요청
+	요청내용 : /oxo/member/memInfo.eat
+	파라미터 : id
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : memInfo()
+	응답문서 : /WEB-INF/views/member/memInfo.jsp
+	
+11. 회원정보 수정 요청
+	요청내용 : /oxo/member/editProc.eat
+	파라미터 : file, pw, nname, tel, email
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : editProc()
+	응답문서 : /WEB-INF/views/member/memInfo.jsp
+
+12. 아이디 찾기 폼 요청
+	요청내용 : /oxo/member/idFind.eat
+	파라미터 : 
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : idFind()
+	응답문서 : /WEB-INF/views/member/idFind.jsp
+	
+13. 아이디 찾기 요청
+	요청내용 : /oxo/member/idFindProc.eat
+	파라미터 : name, email
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : idFindProc()
+	응답문서 : /WEB-INF/views/member/idFind.jsp
+	
+14. 비밀번호 찾기 폼 요청
+	요청내용 : /oxo/member/passFind.eat
+	파라미터 : 
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : passFind()
+	응답문서 : /WEB-INF/views/member/passFind.jsp
+	
+14. 비밀번호 찾기 폼 요청
+	요청내용 : /oxo/member/passFindProc.eat
+	파라미터 : id, name, email
+	컨트롤러 :	com.ineat.oxo.controller.Member
+	처리함수 : passFindProc()
+	응답문서 : 성공 - /WEB-INF/views/main.jsp
+			실패 - /WEB-INF/views/member/passFind.jsp
+	
+	
+	
+=================================================================================================================================
+
+# storyboard 구간 요청처리
+
+1. storyboard 페이지 보기
+	요청내용 : /oxo/storyboard/storyBoard.eat
+	파라미터 : 
+	컨트롤러 : com.ineat.oxo.controller.StoryBoard
+	처리함수 : storyBoard()
+	응답문서 : /WEB-INF/views/storyboard/storyBoard.jsp
+	
+2. storyboard 각 게시물 보기
+	요청내용 : /oxo/storyboard/storyBoardInfo.eat
+	파라미터 : 게시물번호, 회원번호(bno, mid)
+	컨트롤러 : com.ineat.oxo.controller.StoryBoard
+	처리함수 : storyBoardInfo()
+	응답문서 : /WEB-INF/views/storyboard/storyBoardInfo.jsp
+
+3. storyboard 글쓰기 페이지 보기
+	요청내용 : /oxo/storyboard/storyBoardWrite.eat
+	파라미터 : 
+	컨트롤러 : com.ineat.oxo.controller.StoryBoardWrite
+	처리함수 : storyBoardInfoWrite()
+	응답문서 : /WEB-INF/views/storyboard/storyBoardWrite.jsp
+
+4. storyboard 글쓰기
+	요청내용 : /oxo/storyboard/storyBoardWriteProc.eat
+	파라미터 : 회원아이디(mid)
+	컨트롤러 : com.ineat.oxo.controller.StoryBoardWriteProc
+	처리함수 : storyBoardInfoWriteProc()
+	응답문서 : /WEB-INF/views/storyboard/storyBoard.jsp
+
+5. storyboard 좋아요 처리
+	요청내용 : /oxo/storyboard/sbLike.eat
+	파라미터 : 게시물번호, 회원아이디(bno, mid)
+	컨트롤러 : com.ineat.oxo.controller.sbLike
+	처리함수 : sbLike()
+	응답문서 : /WEB-INF/views/storyboard/storyBoardInfo.jsp
+
+6. storyboard 싫어요 처리
+	요청내용 : /oxo/storyboard/sbHate.eat
+	파라미터 : 게시물번호, 회원아이디(bno, mid)
+	컨트롤러 : com.ineat.oxo.controller.
+	처리함수 : sbHate()
+	응답문서 : /WEB-INF/views/storyboard/storyBoardInfo.jsp
+
+7. storyboard 게시물 삭제 처리
+	요청내용 : /oxo/storyboard/sbDelete.eat
+	파라미터 : 게시물번호(bno)
+	컨트롤러 : com.ineat.oxo.controller.sbDelete
+	처리함수 : sbDelete()
+	응답문서 : /WEB-INF/views/storyboard/storyBoard.jsp
+
+8. storyboard 수정시 상세보기
+	요청내용 : /oxo/storyboard/sbViewDetail.eat
+	파라미터 : 게시물번호(bno)
+	컨트롤러 : com.ineat.oxo.controller.sbViewDetail
+	처리함수 : sbViewDetail()
+	응답문서 : 
+
+9. storyboard 수정 처리
+	요청내용 : /oxo/storyboard/sbInfoEdit.eat
+	파라미터 : 게시물번호, 제목, 내용(bno, title, content)
+	컨트롤러 : com.ineat.oxo.controller.sbInfoEdit
+	처리함수 : sbInfoEdit()
+	응답문서 : 
+
+10. storyboard 수정시 게시물 사진 삭제처리
+	요청내용 : /oxo/storyboard/sbInfoImgDelete.eat
+	파라미터 : 게시물번호(bno)
+	컨트롤러 : com.ineat.oxo.controller.sbInfoImgDelete
+	처리함수 : sbInfoImgDelete
+	응답문서 : /WEB-INF/views/storyboard/storyBoardInfo.jsp
+
+11. storyboard 수정시 사진 올리기
+	요청내용 : /oxo/storyboard/sbInfoImgUp.eat
+	파라미터 : 게시물번호, 회원아이디(bno, mid)
+	컨트롤러 : com.ineat.oxo.controller.sbInfoImgUp
+	처리함수 : sbInfoImgUp()
+	응답문서 : /WEB-INF/views/storyboard/storyBoardInfo.jsp
+
+12. storyboard 댓글 등록 처리
+	요청내용 : /oxo/storyboard/sbComment.eat
+	파라미터 : 게시물번호, 회원아이디, 내용(bno, mid, content)
+	컨트롤러 : com.ineat.oxo.controller.sbComment
+	처리함수 : sbComment()
+	응답문서 : /WEB-INF/views/storyboard/storyBoardInfo.jsp
+
+13. storyboard 댓글 수정시 상세보기
+	요청내용 : /oxo/storyboard/sbCmtView.eat
+	파라미터 : 댓글번호(cno)
+	컨트롤러 : com.ineat.oxo.controller.sbCmtView
+	처리함수 : sbCmtView()
+	응답문서 : 
+
+14. storyboard 댓글 수정 처리
+	요청내용 : /oxo/storyboard/sbCmtEdit.eat
+	파라미터 : 댓글번호(cno)
+	컨트롤러 : com.ineat.oxo.controller.sbCmtEdit
+	처리함수 : sbCmtEdit()
+	응답문서 : /WEB-INF/views/storyboard/storyBoardInfo.jsp
+
+15. storyboard 댓글 삭제 처리
+	요청내용 : /oxo/storyboard/sbCmtOneDelete.eat
+	파라미터 : 댓글번호(cno)
+	컨트롤러 : com.ineat.oxo.controller.sbCmtOneDelete
+	처리함수 : sbCmtOneDelete()
+	응답문서 : /WEB-INF/views/storyboard/storyBoardInfo.jsp
+	
+=======================================================================================================================
+
+1. 맛집리스트 페이지 이동 
+	요청내용 : /oxo/ineatlist/list.eat
+	파라미터 : 회원아이디(mid)
+	컨트롤러 : com.ineat.oxo.controller.MainList.java
+	처리함수 : List()
+	응답문서 : /WEB-INF/views/ineatlist/list.jsp
+	
+2. 리스트 더보기, 태그선택 
+	요청내용 : /oxo/ineatlist/morelist.eat
+	파라미터 : 회원아이디(mid)
+	컨트롤러 : com.ineat.oxo.controller.MainList.java
+	처리함수 : morelist()
+	응답문서 : /WEB-INF/views/ineatlist/list.jsp
+	
+3. 맛집정보 자세히 보기
+	요청내용 : /oxo/ineatlist/info.eat
+	파라미터 : 글번호(ml_no)
+	컨트롤러 : com.ineat.oxo.controller.MainList.java
+	처리함수 : detailinfo()
+	응답문서 : /WEB-INF/views/ineatlist/detail/detailinfo.jsp
+	
+4. 맛집 좋아요 처리.
+	요청내용 : /oxo/ineatlist/favoriteup.eat
+	파라미터 : 글번호(ml_no), 회원아이디(mid)
+	컨트롤러 : com.ineat.oxo.controller.MainList.java
+	처리함수 : FavoriteUp()
+	응답문서 : /WEB-INF/views/ineatlist/list.jsp
+	
+	
+	
+5. 리뷰 작성 페이지 이동
+	요청내용 : /oxo//ineatlist/review/reviewform.eat
+	파라미터 : 글번호(ml_no)
+	컨트롤러 : com.ineat.oxo.controller.Review.java
+	처리함수 : reviewform()
+	응답문서 : /WEB-INF/views/ineatlist/review/addreview.jsp
+	
+6. 리뷰 작성 처리.
+	요청내용 : /oxo//ineatlist/review/addreview.eat
+	파라미터 : 글번호(ml_no), 회원아이디(mid)
+	컨트롤러 : com.ineat.oxo.controller.Review.java
+	처리함수 : addreview()
+	응답문서 : /WEB-INF/views/ineatlist/detail/detailinfo.jsp
+	
+7. 리뷰 삭제
+	요청내용 : /oxo//ineatlist/review/delreview.eat
+	파라미터 : 리뷰번호(rv_no)
+	컨트롤러 : com.ineat.oxo.controller.Review.java
+	처리함수 : delreview()
+	응답문서 : /WEB-INF/views/ineatlist/review/detailinfo.jsp
+	
+8. 리뷰 수정 페이지 이동
+	요청내용 : /oxo//ineatlist/review/fixreview.eat
+	파라미터 : 리뷰번호(rv_no)
+	컨트롤러 : com.ineat.oxo.controller.Review.java
+	처리함수 : fixreviewform()
+	응답문서 : /WEB-INF/views/ineatlist/review/fixreview.jsp
+	
+9. 리뷰 수정 처리.
+	요청내용 : /oxo//ineatlist/review/fixreviewproc.eat
+	파라미터 : 리뷰내용(rv_body), 리뷰 점수(rv_score), 리뷰 번호(rv_no)
+	컨트롤러 : com.ineat.oxo.controller.Review.java
+	처리함수 : fixreviewporc()
+	응답문서 : /WEB-INF/views/ineatlist/review/detailinfo.jsp
+
+=======================================================================================================================
+
+ 1. 맛집 검색 처리 
+	요청내용	: /oxo/searchProc.eat
+	파라미터	: 검색키워드(contents)
+	컨트롤러	: com.ineat.oxo.controller.Search.java
+	처리함수	: searchProc()
+	응답문서	:  /WEB-INF/views/search/searchResult.jsp
+	
+ 2. 맛집 검색 필터 처리 
+	요청내용	: /oxo/filterSearch.eat
+	파라미터	: 검색키워드(contents), 가격대(price), 음식종류(tag), 정렬순서(order)
+	컨트롤러	: com.ineat.oxo.controller.Search.java
+	처리함수	: filterResult()
+	응답문서	:  /WEB-INF/views/search/searchResult.jsp
+	
+ 3. 검색 결과 무한 스크롤
+ 	요청내용	: /oxo/moreResult.eat
+ 	파라미터 	: 검색키워드(contents), 가격대(price), 음식종류(tag), 정렬순서(order), 뽑아올 개수 (num)
+ 	컨트롤러	: com.ineat.oxo.controller.Search.java
+ 	처리함수	: moreResult()
+ 	응답문서	:  /WEB-INF/views/search/searchResult.jsp
+ 
+ =======================================
+인잇 추천
+
+1. 추천페이지 뷰보기
+	요청내용 : /oxo/recommend/recommendForm.eat
+	파라미터 : 없음
+	컨트롤러 : com.ineat.oxo.controller.Recommend.java
+	처리함수 : recommendForm();
+	응답문서 : /WEB-INF/views/recommend/recommendForm.jsp
+
+2.날씨정보 api를 이용하여 데이터베이스에서 리스트 가져오기
+	요청내용 : /oxo/recommend/weather.eat
+	파라미터 : 기온(ajax를 이용하여 가져옴 , String dayCondition)
+	컨트롤러 : com.ineat.oxo.controller.Recommend.java
+	처리함수 : result();
+	응답문서 : /WEB-INF/views/recommend/recommendForm.jsp
+
+============================================
+맛드컵
+
+1. 맛드컵페이지 부보기
+	요청내용 : /oxo/mat/matdcup.eat
+	파라미터 : 없음
+	컨트롤러 : com.ineat.oxo.controller.Matdcup.java
+	처리함수 : matdcupForm();
+	응답문서 : /WEB-INF/views/matdcup/matdcup.jsp
+
+2. 맛드컵 우승메뉴 우승횟수 데이터베이스에 추가
+	요청내용 : /oxo/mat/matdcupWin.eat
+	파라미터 : 메뉴이름(ajax이용, String winName)
+	컨트롤러 : com.ineat.oxo.controller.Matdcup.java
+	처리함수 : matdcupInsertCount();
+	응답문서 : /WEB-INF/views/matdcup/matdcup.jsp
+3. 맛드컵 우승횟수 순위 보기
+	요청내용 : /oxo/mat/matdcupRanking.eat
+	파라미터 : 없음
+	컨트롤러 : com.ineat.oxo.controller.Matdcup.java
+	처리함수 : showRanking();
+	응답문서 : /WEB-INF/views/matdcup/matdcup.jsp

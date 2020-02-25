@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+
+   <bean id="fileDown" class="com.ineat.oxo.util.DownloadUtil"/>
+   <bean id="mDAO" class="com.ineat.oxo.dao.MemberDAO" />
+   <bean id="sbDAO" class="com.ineat.oxo.dao.StoryBoardDAO" />
+   <bean id="rbDAO" class="com.ineat.oxo.dao.ReBoardDAO" />
+   <bean id="rvDAO" class="com.ineat.oxo.dao.ReviewDAO" />
+   <bean id="fDAO" class="com.ineat.oxo.dao.FileDAO" />
+   <bean id="tDAO" class="com.ineat.oxo.dao.TasteInfoDAO" />
+   <bean id="mdDAO" class="com.ineat.oxo.dao.MatdcupDAO" />
+   <bean class="com.ineat.oxo.dao.DBsetDAO" id="dbDAO"/>
+   <bean id="schDAO" class="com.ineat.oxo.dao.SearchDAO" />
+   <bean id="rDAO" class="com.ineat.oxo.dao.RecommendDAO" />
+</beans>

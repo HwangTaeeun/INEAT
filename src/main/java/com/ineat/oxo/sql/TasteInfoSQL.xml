@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         
+ <mapper namespace="tSQL">
+ 
+ 
+ 	<select id="selectlist" resultType="tVO">
+		SELECT *
+		FROM
+		(SELECT ml_no, ml_title, ml_newaddr, cnt , rv_cnt, fvr, ROWNUM rno
+		FROM
+		(SELECT  *
+				FROM
+				(SELECT ml_no, ml_title, ml_newaddr, ml_count cnt ,
+		            (select count(*) 
+		            from IE_review
+		            WHERE rv_mlno =  ml_no) rv_cnt,
+		            (select count(*) 
+		            from IE_ML_FAVORITES
+		            where MLF_MLNO = ml_no) fvr
+		            FROM ie_mainlist)
+		            order by cnt desc))
+		WHERE rno between 1 AND 5
+ 	</select>
+ 	
+ 	<select id="morelist" resultType="tVO" parameterType="tVO">
+		SELECT *
+		FROM
+		(SELECT ml_no, ml_title, ml_newaddr, cnt , rv_cnt, fvr, ROWNUM rno
+		FROM
+		(SELECT  *
+				FROM
+				(SELECT ml_no, ml_title, ml_newaddr, ml_count cnt ,
+		            (select count(*) 
+		            from IE_review
+		            WHERE rv_mlno =  ml_no) rv_cnt,
+		            (select count(*) 
+		            from IE_ML_FAVORITES
+		            where MLF_MLNO = ml_no) fvr
+		            FROM ie_mainlist)
+		            order by ${ml_type} desc))
+		WHERE rno between #{rno} AND #{rno}+4
+ 	</select>
+ 	
+ 	<select id="taglist" resultType="tVO" parameterType="tVO">
+	 	SELECT *
+		FROM
+		(SELECT ml_no, ml_title, ml_newaddr, cnt , rv_cnt, fvr, ROWNUM rno
+		FROM
+		(SELECT  *
+			FROM
+			(SELECT ml_no, ml_title, ml_newaddr, ml_count cnt ,
+	            (SELECT count(*) 
+	            from IE_review
+	            WHERE rv_mlno =  ml_no) rv_cnt,
+	            (SELECT count(*) 
+	            FROM IE_ML_FAVORITES
+	            where MLF_MLNO = ml_no) fvr
+	            FROM ie_mainlist
+	            WHERE ml_tag like '%'||#{ml_tag}||'%')
+	            order by ${ml_type} desc))
+			WHERE rno between #{rno} AND #{rno}+4
+ 	</select>
+ 	
+ 	<update id="upcount" parameterType="int">
+ 		UPDATE ie_mainlist
+ 		SET
+ 			ml_count = ml_count+1
+ 		WHERE ml_no = #{ml_no}
+ 	</update>
+ 	
+ 	<select id="tasteInfo" resultType="tVO" parameterType="int">
+ 		SELECT ml_no, ml_time,  ml_title, ml_tel, ml_price, ml_newaddr, ml_oldaddr, ml_menu, ml_count
+ 		FROM ie_mainlist
+ 		WHERE ml_no = #{ml_no}
+ 	</select>
+ 	
+ 	<select id="reviewimgs" parameterType="int" resultType="String">
+ 	SELECT
+	    rf_savename
+	FROM
+	    ie_review , ie_re_fileup
+	WHERE
+	    rv_mlno = #{ml_no} AND
+	    rv_no = rf_rvno(+) AND
+	    rv_no = rf_rvno
+ 	</select>
+ 	
+ 	<select id="getfvrcnt" parameterType="int" resultType="int">
+ 	SELECT
+ 		count(*)
+ 	FROM
+ 		IE_ML_FAVORITES
+ 	WHERE
+ 		MLF_MLNO = #{ml_no}
+ 	</select>
+ 	
+ 	<select id="checkfavorite" parameterType="tVO" resultType="int">
+	SELECT
+		count(*)
+	FROM
+	    IE_ML_FAVORITES
+	WHERE
+	    MLF_MNO = (SELECT m_no
+	            FROM ie_member
+	            WHERE m_id = #{m_id}) AND
+		MLF_MLNO = #{ml_no}
+ 	</select>
+ 	
+	<insert id="favoriteIn" parameterType="tVO">
+	INSERT INTO
+		IE_ML_FAVORITES
+	VALUES(
+		(SELECT NVL(MAX(MLF_NO)+1, 1000001) from IE_ML_FAVORITES),
+		#{ml_no},
+		(SELECT m_no FROM ie_member WHERE m_id = #{m_id}) 
+	)
+	</insert>
+	
+	
+	<delete id="favoriteDel" parameterType="tVO">
+	DELETE FROM 
+	    IE_ML_FAVORITES
+	WHERE
+    	mlf_mlno = #{ml_no}
+    	AND
+    	mlf_mno = (SELECT m_no FROM ie_member WHERE m_id = #{m_id})
+	</delete>
+ </mapper>

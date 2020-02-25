@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         
+ <mapper namespace="dbSQL">
+ 	<insert id="putPic" parameterType="String">
+ 	
+ 	INSERT INTO 
+ 		ie_main_fileup
+ 	VALUES(
+ 		(SELECT
+				NVL(MAX(mf_no) + 1, 1001)
+			FROM
+				ie_main_fileup), 
+				
+				#{pic}, 
+				
+				(SELECT
+				ml_no
+			FROM
+				ie_mainlist
+			WHERE
+				ml_title = substr(#{pic},1,(instr(#{pic},'1')-1)))
+ 	)
+ 	</insert>
+ 
+ 
+ </mapper>

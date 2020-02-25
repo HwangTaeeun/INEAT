@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         
+ <mapper namespace="fSQL">
+ 
+	 <insert id="rvFileaddProc" parameterType="fVO">
+		INSERT INTO
+		ie_re_fileup(
+		    rf_no, rf_oriname, rf_savename, rf_dir, rf_len, rf_rvno
+		)
+		VALUES(
+		    (select NVL(MAX(rf_no)+1, 100000001) from ie_re_fileup), #{oriName}, #{saveName}, #{dir}, #{len}, (SELECT max(rv_no) from ie_review)
+		)
+	 </insert>
+	 
+ 	<delete id="rvFiledelete" parameterType="String">
+ 	DELETE FROM
+ 		ie_re_fileup
+ 	WHERE
+ 		rf_savename=#{savename}
+ 	</delete>
+ 
+ 
+ 	<!-- 회원정보수정 파일업로드 관련 -->
+ 	<insert id="memInfoPic" parameterType="fVO">
+ 	<selectKey keyProperty="mno" resultType="int" order="BEFORE">
+ 		SELECT
+ 			m_no
+ 		FROM
+ 			ie_member
+ 		WHERE
+ 			m_id = #{mid}
+ 	</selectKey>
+ 		INSERT INTO
+ 			ie_profile
+ 		VALUES(
+ 			(SELECT NVL(MAX(p_no)+1, 1000001) from ie_profile), #{mno}, #{oriName}, #{saveName}, #{len}, #{dir}, sysdate
+ 		)
+ 	</insert>
+ 	
+ 	<!-- 회원 사진 유무 체크 -->
+ 	<select id="profCk" parameterType="String" resultType="int">
+ 		SELECT
+ 			count(*)
+ 		FROM
+ 			ie_profile
+ 		WHERE
+ 			p_mno = (SELECT
+ 						m_no
+ 					FROM
+ 						ie_member
+ 					WHERE
+ 						m_id = #{id})
+ 	</select>
+ 	
+ 	<!-- 회원정보수정 파일 업데이트관련 -->
+ 	<update id="profUp" parameterType="fVO">
+ 		UPDATE
+ 			ie_profile
+ 		SET
+ 			p_oriname = #{oriName}
+ 			, p_savename = #{saveName}
+            ,p_len = #{len}
+ 		WHERE
+ 			p_mno = (SELECT
+ 						m_no
+ 					FROM
+ 						ie_member
+ 					WHERE
+ 						m_id = #{mid})
+ 	
+ 	</update>
+ 	
+ 	<!-- 회원정보 사진 가져오깅 ~~ -->
+ 	<select id="getProf" parameterType="fVO" resultType="string">
+ 		SELECT
+ 			NVL(p_savename, 'member.png')
+ 		FROM
+ 			ie_profile, ie_member
+ 		WHERE
+ 			m_id = #{mid}
+ 			AND m_no = p_mno(+)
+ 	</select>
+ 	
+ </mapper>

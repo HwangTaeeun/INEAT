@@ -1,0 +1,62 @@
+@charset "UTF-8";
+.bg {
+		    background-color: rgba(255, 255, 255, 1);
+		    border-color: rgba(214, 214, 214, 1);
+		}
+		
+		.reviewarea {
+		    width: 100%;
+		    height: 150px;
+		    resize: none;
+		    font-size: 16px;
+		    border-color: rgba(214, 214, 214, 1);
+		    border-radius: 3px;
+		    overflow-y: hidden;
+		}
+		
+		.pointStarRating {
+		    width: 156px;
+		    height: 24px;
+		    overflow: hidden;
+		    display: inline-block;
+		    vertical-align: top;
+		    margin: 1px 0 0 0;
+		    padding-left: 1px;
+		    background: url(/oxo/img/sp_ico3.png) no-repeat;
+		    background-position: 0 -1060px;
+		}
+		
+		.pointStarlist {
+		    height: 24px;
+		    width: 12px;
+		    overflow: hidden;
+		    border: 0;
+		    cursor: pointer;
+		    background: url(/oxo/img/sp_ico3.png) no-repeat;
+		    background-position: 0 -9999px;
+		}
+		.pic_1, .up_pic_1 {
+            display: inline-block;
+            position: relative;
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            margin: 1px;
+        }
+        .pic {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .del_pic, .up_del_pic{
+       	    position: absolute;
+		    top: 0;
+		    right: 10px;
+		    color: white;
+		    cursor: pointer;
+		    display:none;
+        }
+        .blurEffect {
+            filter: brightness(30%);
+        }

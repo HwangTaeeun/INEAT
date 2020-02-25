@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         
+ <mapper namespace="mSQL">
+ <!-- 로그인 -->
+ <select id="Login" resultType="int" parameterType="mVO">
+ 	SELECT
+ 		count(*) cnt
+ 	FROM
+ 		ie_member
+ 	WHERE
+ 		m_id = #{id}
+ 		AND m_pw = #{pw}
+ </select>
+ 
+ <insert id="Join" parameterType="mVO">
+ 	<selectKey keyProperty="mno" resultType="int" order="BEFORE">
+ 		SELECT
+ 			NVL(MAX(m_no)+1, 10001)
+ 		FROM
+ 			ie_member
+ 	</selectKey>
+ 		INSERT INTO
+ 			ie_member
+ 		VALUES(
+ 			#{mno}, #{id}, #{pw}, #{name}, #{email}, #{nname}, #{tel}, sysdate, to_date(#{bday}, 'yyyy/MM/dd')
+ 		)
+ </insert>
+ 
+ <!-- 회원가입 아이디 체크 -->
+ <select id="idCk" resultType="int" parameterType="String">
+ 	SELECT
+ 		count(*) cnt
+ 	FROM
+ 		ie_member
+ 	WHERE
+ 		m_id=#{id}
+ </select>
+ 
+ <!-- 회원가입 닉네임 체크 -->
+ <select id="nnCk" resultType="int" parameterType="String">
+ 	SELECT
+ 		count(*) cnt
+ 	FROM
+ 		ie_member
+ 	WHERE
+ 		m_nname= #{nname}
+ </select>
+ 
+ <!-- 회원가입 전화번호 체크 -->
+ <select id="telCk" resultType="int" parameterType="String">
+ 	SELECT
+ 		count(*) cnt
+ 	FROM
+ 		ie_member
+ 	WHERE
+ 		m_tel = #{tel}
+ </select>
+ 
+ <!-- 이메일체크 -->
+  <select id="eCk" resultType="int" parameterType="String">
+ 	SELECT
+ 		count(*) cnt
+ 	FROM
+ 		ie_member
+ 	WHERE
+ 		m_email = #{email}
+ </select>
+ 
+ <!-- 회원정보 가져오기 -->
+ <select id="memInfo" resultType="mVO" parameterType="mVO">
+ 	SELECT
+ 		m_name name, m_nname nname, m_id id, m_pw pw, m_tel tel, m_email email, m_birthday bday, m_date wDate 
+ 	FROM
+ 		ie_member
+ 	WHERE
+ 		m_id = #{id}
+ </select>
+ 
+ <!-- 회원정보 수정 -->
+ <update id="editInfo" parameterType="mVO">
+      UPDATE
+         ie_member
+      <trim prefix="SET" suffixOverrides=",">
+         <if test="nname != null">m_nname = #{nname},</if>
+         <if test="pw != null">m_pw = #{pw},</if>
+         <if test="tel != null">m_tel = #{tel},</if>
+         <if test="email != null">m_email = #{email},</if>
+      </trim>
+		WHERE
+			m_id = #{id}
+</update>
+
+<!-- 아이디찾기 -->
+<select id="idFind" resultType="mVO" parameterType="mVO">
+	SELECT
+		m_id id
+	FROM
+		ie_member
+	WHERE
+		m_name = #{name}
+		AND m_email = #{email}
+</select>
+
+<!-- 비밀번호찾기 -->
+<select id="passFind" resultType="mVO" parameterType="mVO">
+	SELECT
+		m_pw pw
+	FROM
+		ie_member
+	WHERE
+		m_id = #{id}
+		AND m_name = #{name}
+		AND m_email = #{email}
+</select>
+
+ </mapper>

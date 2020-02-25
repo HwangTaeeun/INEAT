@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         
+<mapper namespace="sbSQL">
+	<!-- pagetotalcount 구하기   -->
+	<select id="getTotalCnt" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM
+			IE_STORY_BOARD
+	</select>
+
+
+	<!-- storyBaord 출력 -->
+	<select id="storyBoard" resultType="sbVO" parameterType="pUtil">
+		SELECT 
+		    *
+		FROM
+			(
+			SELECT
+			    ROWNUM rno, bno, mid, title, sbDate, views, LLIKE, HHATE, saveName, cmtCnt
+			FROM
+			    (
+			    SELECT
+			        sb_no bno, m_id mid, sb_title title, sb_date sbDate, sb_views views,
+			    	(SELECT COUNT(*)
+				    FROM IE_SB_LIKEHATE
+				    WHERE
+				    sb_no = sblh_bno
+				    and SBLH_ISSHOW = 'Y'
+				    ) LLIKE,
+				    (SELECT COUNT(*) 
+				    FROM IE_SB_LIKEHATE
+				    WHERE
+				    sb_no = sblh_bno
+				    and SBLH_ISSHOW = 'N'
+				    ) HHATE,
+			        (SELECT NVL(sbf_savename, '') 
+			        FROM IE_SB_FILEUP WHERE SB_NO = SBF_BNO) saveName,
+			        (SELECT COUNT(*) FROM IE_SB_COMMENTS WHERE SB_NO = SBCMT_BNO) cmtCnt
+			    FROM
+			        IE_STORY_BOARD, IE_MEMBER
+			    WHERE
+				    sb_mno = m_no
+			    ORDER BY
+			        sbDate DESC
+			    )
+		    )
+		WHERE
+		    rno BETWEEN #{startCont} AND #{endCont}
+	</select>
+	
+	<!--  storyBoardInfo 출력 -->
+	<select id="storyBoardInfo" resultType="sbVO">
+				SELECT
+		    m_id mid, sb_no bno,
+		    	(SELECT 
+				    NVL(sbf_savename, '')
+				FROM 
+				    ie_story_board,ie_member,ie_sb_fileup 
+				WHERE 
+				    sb_no = #{bno}
+				    and sbf_bno = sb_no
+				    and sb_mno = m_no 
+				    and sb_mno = sbf_mno) saveName,
+		    sb_title title, sb_date sbDate, sb_content content, sb_views views,
+		    
+		    (SELECT COUNT(*)
+		    FROM IE_SB_LIKEHATE
+		    WHERE
+		    sb_no = sblh_bno
+		    and SBLH_ISSHOW = 'Y'
+		    ) LLIKE,
+		    (SELECT COUNT(*) 
+		    FROM IE_SB_LIKEHATE
+		    WHERE
+		    sb_no = sblh_bno
+		    and SBLH_ISSHOW = 'N'
+		    ) HHATE,
+            (SELECT sblh_isshow
+            FROM ie_sb_likehate
+            WHERE sblh_mno = (select m_no from ie_member where m_id = #{mid})
+            AND sblh_bno = #{bno}) isshow
+		FROM
+		    IE_STORY_BOARD, IE_MEMBER
+		WHERE
+		    sb_no = #{bno}
+		    and sb_mno = m_no
+	</select>
+
+	<!-- sb write 처리 -->
+	<insert id="storyBoardWriteProc" parameterType="sbVO">
+		<selectKey keyProperty="writer" resultType="int" order="BEFORE">
+			SELECT
+				M_NO
+			FROM
+				IE_MEMBER
+			WHERE
+				M_ID = #{mid}
+		</selectKey>
+		INSERT INTO
+			ie_story_board(sb_no, sb_mno, sb_title, sb_content, sb_date)
+		VALUES(
+			(SELECT NVL(MAX(sb_no) + 1, 100001) FROM ie_story_board), #{writer}, #{title}, #{content}, sysdate
+		)
+	</insert>
+ 	
+ 	<!--  sbFile write 처리 -->
+ 	<insert id="sbFileAddProc" parameterType="fVO">
+ 		<selectKey keyProperty="writer" resultType="int" order="BEFORE">
+			SELECT
+				M_NO
+			FROM
+				IE_MEMBER
+			WHERE
+				M_ID = #{mid}
+		</selectKey>
+		INSERT INTO
+			ie_sb_fileup(sbf_bno, sbf_mno, sbf_oriname, sbf_savename, sbf_len, sbf_dir)
+		VALUES(
+			(SELECT MAX(sb_no) from ie_story_board),
+			#{writer}, #{oriName}, #{saveName}, #{len}, #{dir}
+		)
+ 	</insert>
+ 	
+ 	<!-- 좋아요 처리 -->
+ 	<select id="sbLike" resultType="int" parameterType="sbVO">
+ 		SELECT
+    		count(*) cnt
+		FROM
+    		IE_SB_LIKEHATE, IE_MEMBER
+		WHERE
+		    m_no = sblh_mno
+		    and m_id= #{mid}
+		    and sblh_bno= #{bno}
+		    and sblh_isshow= #{isshow}
+ 	</select>
+ 
+ 	<update id="sbLikeU" parameterType="sbVO">
+ 		UPDATE 
+		    IE_SB_LIKEHATE
+		SET 
+		    sblh_isshow='Z'
+		WHERE 
+		    sblh_bno= #{bno}
+		    AND sblh_mno = (SELECT
+				                 M_NO
+				                   FROM
+				                 IE_MEMBER
+				                WHERE
+				                   M_ID = #{mid})
+ 	</update>
+ 	
+ 	<select id="sbLikeHC" resultType="int" parameterType="sbVO">
+ 		SELECT
+    		count(*) cnt2
+		FROM
+    		ie_sb_likehate, ie_member
+		WHERE
+		    m_no = sblh_mno
+		    and m_id= #{mid}
+		    and sblh_bno= #{bno}
+		    and sblh_isshow = 'N'
+ 	</select>
+ 	
+ 	<select id="sbLikeZC" resultType="int" parameterType="sbVO">
+ 		SELECT
+    		count(*) cnt3
+		FROM
+    		ie_sb_likehate,ie_member
+		WHERE
+		    m_no = sblh_mno
+		    and m_id= #{mid}
+		    and sblh_bno= #{bno}
+		    and sblh_isshow = 'Z'
+ 	</select>
+ 	
+ 	<update id="sbLikeU2" parameterType="sbVO">
+ 		UPDATE 
+		    ie_sb_likehate
+		SET 
+		    sblh_isshow='Y'
+		WHERE 
+		    sblh_bno= #{bno}
+		    AND sblh_mno = (SELECT
+				                 M_NO
+				                   FROM
+				                 IE_MEMBER
+				                WHERE
+				                   M_ID = #{mid})
+ 	</update>
+ 	
+ 	<insert id="sbLike2" parameterType="sbVO">
+ 		<selectKey keyProperty="writer" resultType="int" order="BEFORE">
+ 			SELECT
+				M_NO
+			FROM
+				IE_MEMBER
+			WHERE
+				M_ID = #{mid}
+ 		</selectKey>
+ 		INSERT INTO
+			ie_sb_likehate
+		VALUES(
+			#{writer}, #{bno}, #{isshow}
+		)
+ 	</insert>
+ 	
+ 	<!-- 싫어요 처리 -->
+ 	<select id="sbHate" resultType="int" parameterType="sbVO">
+ 		SELECT
+    		count(*) cnt
+		FROM
+    		IE_SB_LIKEHATE, IE_MEMBER
+		WHERE
+		    m_no = sblh_mno
+		    and m_id= #{mid}
+		    and sblh_bno= #{bno}
+		    and sblh_isshow= #{isshow}
+ 	</select>
+ 
+ 	<update id="sbHateU" parameterType="sbVO">
+ 		UPDATE 
+		    IE_SB_LIKEHATE
+		SET 
+		    sblh_isshow='Z'
+		WHERE 
+		    sblh_bno= #{bno}
+		    AND sblh_mno = (SELECT
+				                 M_NO
+				                   FROM
+				                 IE_MEMBER
+				                WHERE
+				                   M_ID = #{mid})
+ 	</update>
+ 	
+ 	<select id="sbHateLC" resultType="int" parameterType="sbVO">
+ 		SELECT
+    		count(*) cnt2
+		FROM
+    		ie_sb_likehate, ie_member
+		WHERE
+		    m_no = sblh_mno
+		    and m_id= #{mid}
+		    and sblh_bno= #{bno}
+		    and sblh_isshow = 'Y'
+ 	</select>
+ 	
+ 	<select id="sbHateZC" resultType="int" parameterType="sbVO">
+ 		SELECT
+    		count(*) cnt3
+		FROM
+    		ie_sb_likehate,ie_member
+		WHERE
+		    m_no = sblh_mno
+		    and m_id= #{mid}
+		    and sblh_bno= #{bno}
+		    and sblh_isshow = 'Z'
+ 	</select>
+ 	
+ 	<update id="sbHateU2" parameterType="sbVO">
+ 		UPDATE 
+		    ie_sb_likehate
+		SET 
+		    sblh_isshow='N'
+		WHERE 
+		    sblh_bno= #{bno}
+		    AND sblh_mno = (SELECT
+				                 M_NO
+				                   FROM
+				                 IE_MEMBER
+				                WHERE
+				                   M_ID = #{mid})
+ 	</update>
+ 	
+ 	<insert id="sbHate2" parameterType="sbVO">
+ 		<selectKey keyProperty="writer" resultType="int" order="BEFORE">
+ 			SELECT
+				M_NO
+			FROM
+				IE_MEMBER
+			WHERE
+				M_ID = #{mid}
+ 		</selectKey>
+ 		INSERT INTO
+			ie_sb_likehate
+		VALUES(
+			#{writer}, #{bno}, #{isshow}
+		)
+ 	</insert>
+ 	
+ 	<!-- 게시물 삭제 처리 -->
+ 	<delete id="sbfileDelete" parameterType="sbVO">
+ 		DELETE FROM IE_SB_FILEUP
+		WHERE SBF_BNO = #{bno}
+ 	</delete>
+ 	
+ 	<delete id="sblhDelete" parameterType="sbVO">
+ 		DELETE FROM IE_SB_LIKEHATE
+		WHERE
+		    sblh_bno = #{bno}
+ 	</delete>
+ 	
+ 	<delete id="sbcmtDelete" parameterType="sbVO">
+ 		DELETE FROM IE_SB_COMMENTS
+		WHERE
+		    sbcmt_bno = #{bno}
+ 	</delete>
+ 	
+ 	<delete id="sbDelete" parameterType="sbVO">
+ 		DELETE FROM IE_STORY_BOARD
+		WHERE
+		    sb_no = #{bno}
+		    AND sb_mno = (SELECT
+		                        M_NO
+		                    FROM
+		                        IE_MEMBER
+		                    WHERE
+		                        M_ID = #{mid})
+ 	</delete>
+ 	
+ 	<!-- 게시물 상세보기 -->
+ 	<select id="sbViewDetail" resultType="sbVO" parameterType="sbVO">
+		SELECT
+			sb_no bno, m_id mid, sb_title title, sb_content content, nvl((select sbf_savename from ie_sb_fileup where sbf_bno = sb_no), '') saveName
+		FROM
+			ie_member, ie_story_board
+		WHERE
+			m_no = sb_mno
+			AND sb_no = #{bno}
+	</select>
+	
+	<!-- 게시물 수정 처리 -->
+	<update id="sbInfoEdit" parameterType="sbVO">
+		UPDATE
+			IE_STORY_BOARD
+		<set>
+			<if test="title != null">sb_title = #{title},</if>
+			<if test="content != null">sb_content = #{content},</if>
+		</set>
+		<if test="bno != 0">
+			<trim prefix="WHERE" prefixOverrides="AND|OR">
+				<if test="bno != 0">AND sb_no = #{bno}</if>
+			</trim>
+		</if>
+	</update>
+	
+	<delete id="sbInfoImgDelete" parameterType="sbVO">
+		DELETE FROM IE_SB_FILEUP
+		WHERE
+		    sbF_bno = #{bno}
+	</delete>
+	
+	<insert id="sbInfoImgUp" parameterType="fVO">
+		<selectKey keyProperty="writer" resultType="int" order="BEFORE">
+			SELECT
+				M_NO
+			FROM
+				IE_MEMBER
+			WHERE
+				M_ID = #{mid}
+		</selectKey>
+		INSERT INTO
+			ie_sb_fileup(sbf_bno, sbf_mno, sbf_oriname, sbf_savename, sbf_len, sbf_dir)
+		VALUES(
+			#{bno}, #{writer}, #{oriName}, #{saveName}, #{len}, #{dir}
+		)
+	</insert>
+	
+	<!-- 조회수 함수 처리 -->
+	<update id="viewsCnt" parameterType="int">
+		UPDATE 
+		   IE_STORY_BOARD
+		SET 
+		    SB_VIEWS = SB_VIEWS + 1
+		WHERE 
+		    SB_NO = #{bno}
+	</update>
+	
+	<!-- 댓글 함수 처리 -->
+	<insert id="sbComment" parameterType="sbVO">
+		<selectKey keyProperty="writer" resultType="int" order="BEFORE">
+			SELECT
+				M_NO
+			FROM
+				IE_MEMBER
+			WHERE
+				M_ID = #{mid}
+		</selectKey>
+			INSERT INTO
+				IE_SB_COMMENTS
+			VALUES(
+				(SELECT NVL(MAX(SBCMT_NO) + 1, 1000001) FROM IE_SB_COMMENTS),
+				#{bno}, #{writer}, #{content}, SYSDATE
+			)
+	</insert>
+	
+	<!-- 댓글 보기 처리 -->
+	<select id="sbCommentList" resultType="sbVO" parameterType="sbVO">
+		SELECT
+		    SBCMT_NO cno, SBCMT_BNO bno, (SELECT M_ID FROM IE_MEMBER WHERE M_NO = SBCMT_MNO)mid, SBCMT_CONTENT ccontent, SBCMT_DATE cDate
+		FROM
+		    IE_SB_COMMENTS
+		WHERE
+		    SBCMT_BNO = #{bno}
+		ORDER BY
+		    SBCMT_DATE
+	</select>
+	
+	 <!-- 댓글 상세보기 -->
+ 	<select id="sbCmtView" resultType="sbVO" parameterType="sbVO">
+		SELECT
+	        sbcmt_no cno, m_id mid, sbcmt_content ccontent
+	    FROM
+			ie_member, ie_sb_comments
+		WHERE
+			m_no = sbcmt_mno
+			AND sbcmt_no = #{cno}
+	</select>
+
+	<!-- 댓글 수정 처리 -->
+	<update id="sbCmtEdit" parameterType="sbVO">
+		UPDATE 
+		   IE_SB_COMMENTS
+		SET 
+		    SBCMT_CONTENT = #{content}
+		WHERE 
+		    SBCMT_NO = #{cno}
+	</update>
+	<!-- 댓글 삭제 처리 -->
+	<delete id="sbCmtOneDelete" parameterType="sbVO">
+ 		DELETE FROM IE_SB_COMMENTS
+		WHERE
+		    sbcmt_no = #{cno}
+ 	</delete>
+</mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+         
+ <mapper namespace="rvSQL">
+ 
+ 	<!--  리뷰 작성하는 함수-->
+ 	<insert id="addreview" parameterType="rvVO">
+ 	
+ 	
+ 	<selectKey keyProperty="rv_mno" resultType="int" order="BEFORE">
+	SELECT
+		M_NO
+	FROM
+		IE_MEMBER
+	WHERE
+		M_ID = #{m_id}
+ 	</selectKey>
+ 	
+ 	
+ 	INSERT INTO
+		ie_review(rv_no, rv_mlno, rv_mno, rv_body, rv_date, rv_score)
+	VALUES(
+    	(SELECT NVL(MAX(rv_no)+1, 100001) from ie_review), #{rv_mlno}, #{rv_mno}, #{rv_body}, sysdate, #{rv_score}
+	)
+ 	</insert>
+ 	
+ 	<!-- 리뷰 갯수 검색 -->
+ 	<select id="reviewcnt" parameterType="int" resultType="int">
+ 	select
+		COUNT(*) cnt
+	from
+		ie_review
+	where
+		rv_mlno = #{ml_no}
+ 	</select>
+ 	
+ 	<!-- 리뷰 텍스트내용 확인 -->
+ 	<select id="reviewinfolist" parameterType="int" resultType="rvVO">
+ 	SELECT
+	    rv_no, rv_body, rv_date, rv_score ,
+	    (SELECT COUNT(*) FROM ie_re_fileup WHERE rf_rvno = rv_no) cnt,
+	    (SELECT M_ID FROM IE_MEMBER WHERE m_no = rv_mno) m_id
+	FROM
+	    ie_review
+	WHERE
+	    rv_mlno = #{ml_no}
+ 	</select>
+ 	
+ 	<!-- 리뷰 정보 한개 확인. -->
+ 	<select id="reviewinfo" parameterType="int" resultType="rvVO">
+ 	SELECT
+	    rv_no, rv_body, rv_score , rv_mlno,
+	    (SELECT COUNT(*) FROM ie_re_fileup WHERE rf_rvno = rv_no) cnt
+	FROM
+	    ie_review
+	WHERE
+	    rv_no = #{rv_no}
+ 	</select>
+ 	
+ 	<!-- 리뷰 사진정보 확인 -->
+ 	<select id="rvfileinfo" parameterType="int" resultType="String">
+ 	SELECT
+    	rf_savename
+	FROM
+	    ie_re_fileup
+	where
+	    rf_rvno = #{rvno}
+ 	</select>
+ 	
+ 	<!-- 맛집 평균점수 확인 -->
+ 	<select id="reviewavg" parameterType="int" resultType="double">
+ 	SELECT
+	    NVL(TRUNC(AVG(rv_score), 1),0)
+	FROM
+	    ie_review
+	WHERE
+	    rv_mlno = #{ml_no}
+ 	</select>
+ 	
+ 	<!-- 메인에 노출될 리뷰 -->
+ 	<select id="mainReview" resultType="rvVO">
+ 	SELECT
+ 		  rv_no, rv_body, rv_date, rv_score ,
+ 		(SELECT COUNT(*) FROM ie_re_fileup WHERE rf_rvno = rv_no) cnt,
+	    (SELECT M_ID FROM IE_MEMBER WHERE m_no = rv_mno) m_id,
+	  (SELECT p_savename FROM ie_profile WHERE p_mno = rv_mno) p_savename
+ 	FROM
+ 		ie_review
+ 	ORDER BY  rv_date DESC	
+ 	</select>
+ 	
+ 	
+ 	<delete id="delreview" parameterType="int">
+ 	DELETE FROM
+ 		ie_review 
+ 	WHERE
+ 		rv_no=#{rv_no}
+ 	</delete>
+ 	
+ 	<!-- 리뷰 수정 -->
+ 	<update id="fixreview" parameterType="rvVO">
+ 	UPDATE
+	    ie_review
+	SET
+	    rv_body = #{rv_body},
+	    rv_score = #{rv_score}
+	WHERE
+	    rv_no = #{rv_no}
+ 	</update>
+ 	
+ </mapper>
